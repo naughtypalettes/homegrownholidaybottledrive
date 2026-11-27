@@ -1,0 +1,159 @@
+/* Homegrown Holiday Bottle Drive
+   Part 1: the approved mockup's <style> block, unchanged.
+   Part 2 (below): additions for the working page. */
+
+body{margin:0}
+img{image-rendering:pixelated}
+a{color:#101e37}a:hover{color:#ce5352}
+input,select,textarea,button{font:inherit}
+.hg-snow,.hg-sparks,.hg-winlayer{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.hg-winlayer{top:auto;height:340px;z-index:1}
+.hg-flake{position:absolute;top:-12px;background:#dcede9;animation-name:hgfall,hgdrift;animation-timing-function:linear,steps(4);animation-iteration-count:infinite,infinite}
+@keyframes hgfall{from{top:-12px}to{top:100%}}
+@keyframes hgdrift{0%,100%{margin-left:0}50%{margin-left:12px}}
+.hg-stars{animation:hgtwinkle 5s steps(3) infinite}
+@keyframes hgtwinkle{0%,100%{opacity:1}50%{opacity:.65}}
+.hg-spark{position:absolute;width:4px;height:4px;background:#edbe69;box-shadow:4px 0 0 #edbe69,-4px 0 0 #edbe69,0 4px 0 #edbe69,0 -4px 0 #edbe69;animation:hgspark 3s steps(2) infinite}
+@keyframes hgspark{0%,100%{opacity:0}50%{opacity:1}}
+.hg-sway{transform-origin:50% 0;animation:hgsway 4s ease-in-out infinite}
+@keyframes hgsway{0%,100%{transform:rotate(0)}25%{transform:rotate(.35deg)}75%{transform:rotate(-.35deg)}}
+.hg-rise{animation:hgrise .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes hgrise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.hg-cell{animation:hgcell .25s steps(1) both}
+@keyframes hgcell{from{background:#2a3a57}to{background:#edbe69}}
+.hg-glow{animation:hgglow 2.4s steps(2) 2s infinite}
+@keyframes hgglow{0%,100%{color:#edbe69}50%{color:#f4f3da}}
+.hg-bob{animation:hgbob 1.6s steps(2) infinite}
+@keyframes hgbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.hg-hop{animation:hghop 2.2s steps(3) infinite}
+@keyframes hghop{0%,70%,100%{transform:translateY(0)}80%{transform:translateY(-10px)}90%{transform:translateY(-4px)}}
+.hg-tree{animation:hgtree 3s steps(2) infinite}
+@keyframes hgtree{0%,100%{filter:brightness(1)}50%{filter:brightness(1.12)}}
+.hg-flash{position:absolute;z-index:2;width:56px;height:56px;margin:-28px 0 0 -28px;background:#ffffff;box-shadow:0 0 0 8px rgba(255,255,255,.5),0 0 0 16px rgba(255,255,255,.2);opacity:0;animation:hgflash 5s steps(1) 2s infinite;pointer-events:none}
+@keyframes hgflash{0%,94%,100%{opacity:0}95%,97%{opacity:1}}
+.hg-win{position:absolute;width:8px;height:8px;background:#edbe69;animation:hgwin 5s steps(1) infinite}
+@keyframes hgwin{0%,40%{opacity:1}41%,100%{opacity:0}}
+.hg-btn{transition:transform .12s steps(2),box-shadow .12s steps(2)}
+.hg-btn:hover{transform:translate(-3px,-3px);box-shadow:11px 11px 0 #0a1428}
+.hg-btn:active{transform:translate(8px,8px);box-shadow:0 0 0 #0a1428}
+.hg-lift{transition:transform .18s steps(3),box-shadow .18s steps(3)}
+.hg-lift:hover{transform:translate(-4px,-4px);box-shadow:12px 12px 0 #0a1428 !important}
+.hg-lift:hover .hg-num{animation:hgwiggle .5s steps(4)}
+@keyframes hgwiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+.hg-icon{animation:hgicon 3.6s steps(2) infinite}
+@keyframes hgicon{0%,85%,100%{transform:translateY(0)}90%{transform:translateY(-6px)}}
+.hg-blink{display:inline-block;width:14px;height:14px;margin-left:12px;background:#ce5352;vertical-align:middle;animation:hgblinkk 1s steps(1) infinite}
+@keyframes hgblinkk{0%,50%{opacity:1}51%,100%{opacity:0}}
+details[open] > p{animation:hgrise .35s ease-out both}
+@supports (animation-timeline: view()){
+.hg-reveal{animation:hgrise linear both;animation-timeline:view();animation-range:entry 0% entry 40%}
+.hg-grow{transform-origin:0 50%;animation:hggrow linear both;animation-timeline:view();animation-range:entry 20% cover 45%}
+}
+@keyframes hggrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.hg-still *,.hg-still *::before,.hg-still *::after{animation:none !important;transition:none !important}
+.hg-still .hg-flake,.hg-still .hg-spark,.hg-still .hg-flash,.hg-still .hg-win{display:none}
+@media (prefers-reduced-motion: reduce){.hg-root *{animation:none !important;transition:none !important}.hg-flake,.hg-spark,.hg-flash{display:none}}
+
+/* ---------------------------------------------------------------
+   Part 2: additions for the working page and the My pickup app
+   --------------------------------------------------------------- */
+:root{
+  --navy:#101e37;--deep:#0a1428;--cream:#f4f3da;--snow:#dcede9;--red:#ce5352;
+  --yellow:#edbe69;--blue:#5595a6;--green:#123f3c;--ink-muted:#33405a;
+}
+body{background:var(--cream);font-family:'Atkinson Hyperlegible',system-ui,sans-serif;color:var(--navy)}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+.hg-still{scroll-behavior:auto}
+/* Inline display styles would otherwise beat the hidden attribute */
+[hidden]{display:none !important}
+section[id],[id="faq"]{scroll-margin-top:16px}
+
+/* Visible focus everywhere (red ring sits outside the element) */
+a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--red);outline-offset:3px}
+input[type=radio]:focus-visible,input[type=checkbox]:focus-visible{outline-offset:2px}
+button.hg-btn,.hg-button{cursor:pointer}
+button.hg-btn:disabled{opacity:.7;cursor:progress;transform:none;box-shadow:8px 8px 0 var(--deep)}
+.hg-sr{position:absolute !important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.hg-skip{position:absolute;left:16px;top:-80px;z-index:10;background:var(--yellow);color:var(--navy);padding:12px 16px;font-weight:700;border:3px solid var(--deep)}
+.hg-skip:focus{top:16px}
+
+/* Radio "chips": selected state follows the input instead of being hard-coded */
+.hg-choice{background:#ffffff;color:var(--navy);cursor:pointer}
+.hg-choice.is-checked,.hg-choice:has(input:checked){background:var(--navy);color:var(--cream)}
+
+/* Field errors: navy text with a red pixel marker (red text fails contrast at this size) */
+.hg-error{display:flex;gap:10px;align-items:flex-start;font-size:15px;font-weight:700;color:var(--navy)}
+.hg-error::before{content:"";flex:none;width:12px;height:12px;margin-top:4px;background:var(--red)}
+.hg-error:empty{display:none}
+[aria-invalid="true"]{border-color:var(--red) !important;box-shadow:4px 4px 0 var(--red)}
+.hg-alert{background:#ffffff;border:3px solid var(--red);box-shadow:6px 6px 0 var(--red);padding:16px 18px;font-size:16px;line-height:1.5;color:var(--navy)}
+.hg-alert strong{display:block;margin-bottom:4px}
+.hg-honey{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+/* Motion toggle (footer) */
+.hg-motion-toggle{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0 14px;background:transparent;color:var(--cream);border:2px solid #2a3a57;font-size:14px}
+.hg-motion-toggle:hover{border-color:var(--cream)}
+
+/* Footer and inline links on dark backgrounds */
+.hg-on-dark a{color:var(--cream)}
+.hg-on-dark a:hover{color:var(--yellow)}
+
+/* Partner logos once real ones exist */
+.hg-logo-slot img{max-width:100%;max-height:64px;image-rendering:auto}
+
+/* -------- Confirmation screen (inside the booking card) -------- */
+.hg-confirm{display:flex;flex-direction:column;gap:26px}
+.hg-eyebrow{margin:0 0 6px;font-family:'Silkscreen',monospace;font-size:16px;color:var(--red)}
+.hg-h3{margin:0;font-family:'Silkscreen',monospace;font-weight:700;font-size:26px;line-height:1.15}
+.hg-codebox{background:var(--navy);color:var(--cream);border:3px solid var(--deep);box-shadow:8px 8px 0 var(--deep);padding:22px 24px;display:flex;flex-wrap:wrap;gap:18px 40px;align-items:flex-end}
+.hg-codebox .hg-label{display:block;font-family:'Silkscreen',monospace;font-size:16px;color:var(--cream);margin-bottom:6px}
+.hg-code{white-space:nowrap;font-family:'Silkscreen',monospace;font-weight:700;font-size:clamp(34px,6vw,48px);line-height:1;color:var(--yellow);letter-spacing:2px}
+.hg-date{font-family:'Silkscreen',monospace;font-weight:700;font-size:24px;line-height:1.1;color:var(--cream)}
+.hg-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+.hg-steps li{display:flex;gap:14px;align-items:flex-start;font-size:17px;line-height:1.5}
+.hg-steps .hg-n{flex:none;width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:var(--red);color:#ffffff;font-family:'Silkscreen',monospace;font-weight:700;font-size:20px;border:3px solid var(--deep)}
+.hg-note{background:#ffffff;border:3px dashed var(--navy);padding:16px 18px;font-size:16px;line-height:1.5}
+.hg-actions{display:flex;flex-wrap:wrap;gap:18px 24px;align-items:center}
+.hg-button{display:inline-flex;align-items:center;justify-content:center;min-height:56px;padding:0 28px;box-sizing:border-box;font-family:'Silkscreen',monospace;font-weight:700;font-size:20px;text-decoration:none;background:var(--red);color:#ffffff;border:3px solid var(--deep);box-shadow:8px 8px 0 var(--deep)}
+.hg-button:hover{color:#ffffff}
+.hg-button--ghost{background:transparent;color:var(--navy);border-color:var(--navy);box-shadow:none}
+.hg-button--ghost:hover{color:var(--navy)}
+.hg-button--small{min-height:44px;padding:0 16px;font-size:16px;box-shadow:4px 4px 0 var(--deep)}
+.hg-button--ghost.hg-button--small{box-shadow:none}
+.hg-linkbtn{background:none;border:0;padding:0;min-height:44px;font-family:'Silkscreen',monospace;font-size:16px;color:var(--navy);text-decoration:underline;cursor:pointer}
+
+/* -------- My pickup page -------- */
+.hg-wrap{max-width:1200px;margin:0 auto;padding:0 24px;box-sizing:border-box}
+.hg-card{background:var(--cream);color:var(--navy);border:3px solid var(--deep);padding:clamp(22px,4vw,40px);box-sizing:border-box;box-shadow:12px 12px 0 var(--red)}
+.hg-card--white{background:#ffffff;box-shadow:8px 8px 0 var(--deep)}
+.hg-field{display:flex;flex-direction:column;gap:8px}
+.hg-field>label,.hg-legend{font-weight:700;font-size:17px;padding:0}
+.hg-legend{margin-bottom:8px}
+.hg-input{min-height:52px;padding:0 14px;border:3px solid var(--navy);background:#ffffff;color:var(--navy);box-sizing:border-box;width:100%;font-size:17px;border-radius:0}
+textarea.hg-input{padding:14px;min-height:104px;resize:vertical}
+.hg-hint{font-size:15px;color:var(--ink-muted)}
+.hg-fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;min-width:0}
+.hg-chips{display:flex;flex-wrap:wrap;gap:10px}
+.hg-chips label{display:flex;align-items:center;gap:10px;min-height:52px;padding:0 18px;border:3px solid var(--navy);flex:1 1 120px;box-sizing:border-box;font-weight:700}
+.hg-chips input{accent-color:var(--red);width:18px;height:18px;margin:0}
+.hg-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.hg-panel-title{margin:0 0 16px;font-family:'Silkscreen',monospace;font-weight:700;font-size:22px;line-height:1.15}
+.hg-tracker{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.hg-tracker li{border:3px solid var(--navy);padding:12px 14px;background:#ffffff;color:var(--navy);font-family:'Silkscreen',monospace;font-size:16px;display:flex;align-items:center;gap:10px}
+.hg-tracker li::before{content:"";flex:none;width:12px;height:12px;border:2px solid var(--navy);background:#ffffff}
+.hg-tracker li.is-done{background:var(--navy);color:var(--cream)}
+.hg-tracker li.is-done::before{background:var(--yellow);border-color:var(--yellow)}
+.hg-tracker li.is-current{background:var(--yellow);color:var(--navy)}
+.hg-tracker li.is-current::before{background:var(--red)}
+.hg-rows{list-style:none;margin:0;padding:0}
+.hg-rows li{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 18px;padding:12px 0;border-bottom:2px solid rgba(16,30,55,.15)}
+.hg-rows li:last-child{border-bottom:0}
+.hg-rows .hg-when{font-family:'Silkscreen',monospace;font-weight:700;font-size:18px}
+.hg-tag{display:inline-block;font-family:'Silkscreen',monospace;font-size:16px;padding:4px 10px;border:2px solid var(--navy);background:var(--snow)}
+.hg-tag--skip{background:#ffffff;text-decoration:line-through}
+.hg-tag--warn{background:var(--yellow)}
+.hg-dl{display:grid;grid-template-columns:max-content 1fr;gap:8px 18px;margin:0;font-size:16px}
+.hg-dl dt{font-weight:700}
+.hg-dl dd{margin:0;overflow-wrap:anywhere}
+.hg-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:20;background:var(--navy);color:var(--cream);border:3px solid var(--yellow);padding:12px 18px;font-weight:700;max-width:calc(100% - 32px);box-sizing:border-box}

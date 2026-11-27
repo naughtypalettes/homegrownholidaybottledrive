@@ -17,7 +17,7 @@
 window.HG_CONFIG = {
   // Paste the "Web app" URL from Apps Script > Deploy here.
   // Leave it blank and the form runs in PREVIEW mode: nothing is saved or emailed.
-  appsScriptUrl: '',
+  appsScriptUrl: 'https://script.google.com/macros/s/AKfycby1-kI9XjOiCLF1TwzS5i3WaT8ya2A3eG37Gc2MN2SSXyBJuVIZqsuRqOuy1fFfFxp_dw/exec',
 
   // Links in the header and footer. '#' = not set yet.
   links: {
